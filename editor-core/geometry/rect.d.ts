@@ -1,0 +1,20 @@
+import type { Point, Rect } from '../types.js';
+export declare function rectangle(x: number, y: number, width: number, height: number): Rect;
+export declare function normalizeRect(value: Rect): Rect;
+export declare function rectFromPoints(a: Point, b: Point): Rect;
+export declare function rectFromPointList(points: Point[]): Rect;
+export declare function right(value: Rect): number;
+export declare function bottom(value: Rect): number;
+export declare function center(value: Rect): Point;
+export declare function containsPoint(value: Rect, target: Point, inclusive?: boolean): boolean;
+export declare function containsRect(outer: Rect, inner: Rect): boolean;
+export declare function intersects(a: Rect, b: Rect, inclusive?: boolean): boolean;
+export declare function intersection(a: Rect, b: Rect): Rect | undefined;
+export declare function intersectionArea(a: Rect, b: Rect): number;
+export declare function inflate(value: Rect, amount: number): Rect;
+export declare function translate(value: Rect, delta: Point): Rect;
+export declare function union(a: Rect, b: Rect): Rect;
+export declare function unionAll(values: Rect[]): Rect;
+export declare function nearestPoint(value: Rect, target: Point): Point;
+export declare function corners(value: Rect): Point[];
+//# sourceMappingURL=rect.d.ts.map

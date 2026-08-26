@@ -1,0 +1,25 @@
+import type { Point } from '../types.js';
+export declare const EPSILON = 1e-9;
+export declare function point(x?: number, y?: number): Point;
+export declare function add(a: Point, b: Point): Point;
+export declare function subtract(a: Point, b: Point): Point;
+export declare function multiply(a: Point, scalar: number): Point;
+export declare function dot(a: Point, b: Point): number;
+export declare function magnitudeSquared(value: Point): number;
+export declare function magnitude(value: Point): number;
+export declare function distance(a: Point, b: Point): number;
+export declare function normalize(value: Point): Point;
+export declare function perpendicular(value: Point): Point;
+export declare function lerp(a: Point, b: Point, amount: number): Point;
+export declare function midpoint(a: Point, b: Point): Point;
+export declare function clamp(value: number, minimum: number, maximum: number): number;
+export declare function snap(value: number, spacing: number): number;
+export declare function snapPoint(value: Point, spacing: number): Point;
+export declare function almostEqual(a: number, b: number, epsilon?: number): boolean;
+export declare function pointsEqual(a: Point, b: Point, epsilon?: number): boolean;
+export declare function isAxisAligned(a: Point, b: Point, epsilon?: number): boolean;
+export declare function projectPointToSegment(value: Point, start: Point, end: Point): Point;
+export declare function distancePointToSegment(value: Point, start: Point, end: Point): number;
+export declare function angleDegrees(start: Point, end: Point): number;
+export declare function roundPoint(value: Point, decimalPlaces?: number): Point;
+//# sourceMappingURL=vector.d.ts.map

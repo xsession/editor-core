@@ -1,0 +1,73 @@
+import type { Axis, Point, Rect, RouteSegment, Side } from './types.js';
+export declare const EPSILON = 0.000001;
+export declare function point(x: number, y: number): Point;
+export declare function rect(x: number, y: number, width: number, height: number): Rect;
+export declare function add(a: Point, b: Point): Point;
+export declare function subtract(a: Point, b: Point): Point;
+export declare function scale(a: Point, scalar: number): Point;
+export declare function dot(a: Point, b: Point): number;
+export declare function cross(a: Point, b: Point): number;
+export declare function magnitude(a: Point): number;
+export declare function normalize(a: Point): Point;
+export declare function distance(a: Point, b: Point): number;
+export declare function manhattanDistance(a: Point, b: Point): number;
+export declare function nearlyEqual(a: number, b: number, epsilon?: number): boolean;
+export declare function pointsEqual(a: Point, b: Point, epsilon?: number): boolean;
+export declare function clamp(value: number, min: number, max: number): number;
+export declare function snap(value: number, spacing: number): number;
+export declare function snapPoint(value: Point, spacing: number): Point;
+export declare function sideNormal(side: Side): Point;
+export declare function sideTangent(side: Side): Point;
+export declare function oppositeSide(side: Side): Side;
+export declare function rotateSide(side: Side, rotation: 0 | 90 | 180 | 270): Side;
+export declare function rotatePoint(pointValue: Point, rotation: 0 | 90 | 180 | 270): Point;
+export declare function transformLocalPoint(local: Point, localSize: {
+    width: number;
+    height: number;
+}, worldCenter: Point, rotation: 0 | 90 | 180 | 270, mirrorX?: boolean, mirrorY?: boolean): Point;
+export declare function transformLocalVector(vector: Point, rotation: 0 | 90 | 180 | 270, mirrorX?: boolean, mirrorY?: boolean): Point;
+export declare function boundsFromPoints(points: Point[]): Rect;
+export declare function rectCorners(value: Rect): Point[];
+export declare function rectCenter(value: Rect): Point;
+export declare function rectRight(value: Rect): number;
+export declare function rectBottom(value: Rect): number;
+export declare function inflateRect(value: Rect, amount: number): Rect;
+export declare function translateRect(value: Rect, delta: Point): Rect;
+export declare function unionRects(values: Rect[]): Rect;
+export declare function rectContainsPoint(value: Rect, candidate: Point, inclusive?: boolean): boolean;
+export declare function rectContainsRect(container: Rect, candidate: Rect): boolean;
+export declare function rectsIntersect(a: Rect, b: Rect, inclusive?: boolean): boolean;
+export declare function intersectionArea(a: Rect, b: Rect): number;
+export declare function distancePointToSegment(candidate: Point, start: Point, end: Point): number;
+export declare function closestPointOnSegment(candidate: Point, start: Point, end: Point): Point;
+export declare function segmentAxis(start: Point, end: Point): Axis | 'diagonal';
+export declare function isOrthogonalSegment(start: Point, end: Point): boolean;
+export declare function segmentIntersectsRect(start: Point, end: Point, obstacle: Rect, allowBoundaryTouch?: boolean): boolean;
+export declare function polylineIntersectsRect(points: Point[], obstacle: Rect): boolean;
+export declare function simplifyPolyline(points: Point[]): Point[];
+export declare function orthogonalizePolyline(points: Point[], horizontalFirst?: boolean): Point[];
+export declare function routeSegments(points: Point[]): RouteSegment[];
+export declare function polylineLength(points: Point[]): number;
+export declare function pointAtPolylineFraction(points: Point[], fraction: number): {
+    point: Point;
+    segmentIndex: number;
+    tangent: Point;
+};
+export declare function closestPointOnPolyline(candidate: Point, points: Point[]): {
+    point: Point;
+    segmentIndex: number;
+    distance: number;
+    fraction: number;
+};
+export declare function lineSegmentsCross(a1: Point, a2: Point, b1: Point, b2: Point): Point | undefined;
+export declare function countPolylineCrossings(a: Point[], b: Point[]): number;
+export declare function routeBounds(points: Point[], padding?: number): Rect;
+export declare function screenToleranceToWorld(tolerancePx: number, zoom: number): number;
+export declare function formatNumber(value: number): string;
+export interface RoundedPathResult {
+    path: string;
+    radii: number[];
+}
+export declare function computeSafeCornerRadii(points: Point[], requestedRadius: number, obstacles?: Rect[]): number[];
+export declare function roundedOrthogonalPath(points: Point[], requestedRadius: number, obstacles?: Rect[]): RoundedPathResult;
+//# sourceMappingURL=geometry.d.ts.map
