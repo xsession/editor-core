@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "editor-core-py"
+version = "0.3.0"
+description = "Framework-neutral high-performance engineering editor core for Python"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.setuptools]
+packages = ["editor_core_py"]

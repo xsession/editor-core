@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>editor-core large scene benchmark</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; background: #f7f8fa; color: #111827; }
+    main { max-width: 1200px; margin: auto; }
+    button { padding: 10px 16px; font-weight: 650; }
+    pre { background: white; border: 1px solid #d1d5db; padding: 12px; min-height: 260px; overflow: auto; }
+    canvas { background: white; border: 1px solid #d1d5db; width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>editor-core 1k / 10k / 50k benchmark</h1>
+  <p>Measures document generation, scene/index construction, indexed hit tests, viewport planning, and visible Canvas2D rendering. Auto-routing and validation are disabled to isolate large-canvas runtime costs.</p>
+  <button id="run">Run benchmark</button>
+  <pre id="output">Press Run benchmark.</pre>
+  <canvas id="canvas" width="1600" height="900"></canvas>
+</main>
+<script type="module" src="./benchmark-app.js"></script>
+</body>
+</html>
