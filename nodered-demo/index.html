@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>editor-core flow demo</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div id="app">
+  <header id="toolbar">
+    <div class="brand">editor-core <span>flow demo</span></div>
+    <div class="group">
+      <button id="btn-undo" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+      <button id="btn-redo" title="Redo (Ctrl+Y)">&#8631; Redo</button>
+      <button id="btn-delete" title="Delete selection (Del)">Delete</button>
+    </div>
+    <div class="group">
+      <button id="btn-zoom-out" title="Zoom out">&minus;</button>
+      <button id="btn-zoom-fit" title="Fit to content">Fit</button>
+      <button id="btn-zoom-in" title="Zoom in">+</button>
+      <span id="zoom-readout">100%</span>
+    </div>
+    <div class="group">
+      <button id="btn-demo">Load demo flow</button>
+      <button id="btn-clear">Clear</button>
+      <button id="btn-export">Export JSON</button>
+      <button id="btn-import">Import JSON</button>
+      <input id="file-import" type="file" accept="application/json" hidden />
+    </div>
+    <div class="group deploy">
+      <button id="btn-deploy" class="primary">&#9654; Deploy</button>
+    </div>
+  </header>
+
+  <div id="body">
+    <aside id="palette">
+      <h2>Palette</h2>
+      <input id="palette-search" type="search" placeholder="Filter nodes&hellip;" />
+      <div id="palette-list"></div>
+      <p class="hint">Drag a node onto the canvas, or double-click empty canvas to quick-add. Click an <b>inject</b> node body to fire it. Arrow keys nudge the selection.</p>
+    </aside>
+
+    <main id="canvas-wrap">
+      <canvas id="canvas"></canvas>
+      <div id="context-menu" class="hidden"></div>
+      <div id="quick-add" class="hidden">
+        <input id="quick-add-input" type="text" placeholder="Type a node name&hellip;" />
+        <div id="quick-add-results"></div>
+      </div>
+      <div id="port-tooltip" class="hidden"></div>
+    </main>
+
+    <aside id="sidebar">
+      <div class="tabs">
+        <button class="tab active" data-tab="properties">Properties</button>
+        <button class="tab" data-tab="debug">Debug</button>
+        <button class="tab" data-tab="validation">Issues<span id="issue-count" class="badge hidden">0</span></button>
+      </div>
+      <div class="tab-panel" id="panel-properties"></div>
+      <div class="tab-panel hidden" id="panel-debug">
+        <div class="panel-actions"><button id="btn-clear-debug">Clear log</button></div>
+        <div id="debug-log"></div>
+      </div>
+      <div class="tab-panel hidden" id="panel-validation">
+        <div id="validation-list"></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer id="statusbar">
+    <span id="status-selection">No selection</span>
+    <span id="status-counts"></span>
+    <span id="status-message"></span>
+  </footer>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
