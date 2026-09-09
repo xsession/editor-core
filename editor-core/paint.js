@@ -1,5 +1,5 @@
 export const DEFAULT_DARK_THEME = {
-    id: 'ohcad-dark',
+    id: 'editor-core-dark',
     background: '#20242a',
     gridMinor: '#2d333b',
     gridMajor: '#3a424c',
@@ -39,7 +39,7 @@ export const DEFAULT_DARK_THEME = {
 };
 export const DEFAULT_LIGHT_THEME = {
     ...DEFAULT_DARK_THEME,
-    id: 'ohcad-light',
+    id: 'editor-core-light',
     background: '#f8fafc',
     gridMinor: '#e2e8f0',
     gridMajor: '#cbd5e1',

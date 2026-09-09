@@ -1,37 +1,65 @@
-# editor-core advanced visual/performance v3
+# `@xsession/editor-core`
 
-Prepared on top of the v2 patch for `xsession/editor-core` commit `95a26c1909325fb3135a62f34dbad55cbf0e8973`.
+A framework-neutral engineering-diagram engine with first-class wiring-harness
+semantics. The repository owns the reusable editor model, geometry, routing,
+interaction, rendering, validation, serialization, performance runtimes, and
+semantic tests used by RouteCore and other hosts.
 
-## New in v3
+## Core capabilities
 
-- package-default incremental `HarnessEditorEngine`;
-- original engine retained as `LegacyHarnessEditorEngine`;
-- authoritative mutation-impact derivation;
-- obstacle/topology/environment routing revision counters;
-- dependency-driven local rerouting wired into command/preview/undo/redo flows;
-- ELK auto-layout backend + one-history-entry layout transaction;
-- actual optional libavoid WebAssembly backend using `@mr_mint/elkjs-libavoid`;
-- persistent libavoid routing sessions for drag transactions;
-- 1k / 10k / 50k browser large-scene benchmark app;
-- dependency-free Python implementation;
-- optional Python-to-Node bridge for the same ELK/libavoid production backends.
+- dynamic components, stable ports, four-sided pin banks, rotation, mirroring,
+  measured labels, and connected-port mutation policies;
+- direct, orthogonal, dogleg, trunk, manual, and fan-out routing with lead-ins,
+  obstacle avoidance, rounded bends, route constraints, and crossings;
+- solid, striped, tracer, dual-color, shield, and layered wire paint;
+- automatic, owner-relative, and world-pinned label placement;
+- preview transactions, undo/redo, hit testing, CAD marquee selection, snapping,
+  connection gestures, and segment manipulation;
+- deterministic SVG, Canvas2D, and optional PixiJS render paths;
+- adaptive spatial and connectivity indexes, incremental scene derivation,
+  dependency-scoped rerouting, dirty-region rendering, LOD, and metrics;
+- routing schedulers, workers, caches, magnetic targets, bundle routing, ELK
+  layout, and optional libavoid/WASM routing;
+- deterministic serialization, validation, and 1k/10k/50k benchmarks;
+- JavaScript/TypeScript and dependency-free Python implementations.
 
-## Apply JavaScript patch
+The TypeScript source of record is in `src/`. Compiled ESM and declarations are
+in `editor-core/`. Advanced runtime modules without TypeScript implementations
+retain checked declarations in `src/` and checked JavaScript in `editor-core/`.
 
-Copy the contents of this package over a checkout of `xsession/editor-core` at the referenced commit. The `editor-core/index.js` / `index.d.ts` files expose the optimized engine as the normal `HarnessEditorEngine` name.
+## Build and test
 
-Optional external routing/layout dependencies:
+TypeScript 5.8 or newer is required to rebuild the typed base:
 
 ```bash
-npm install elkjs @mr_mint/elkjs-libavoid
+npm run build
+npm test
 ```
 
-Browser libavoid requires serving `libavoid.wasm` and passing its URL to `LibavoidWasmBackend.init()` / constructor options.
+The base semantic suite verifies component geometry, routing, rendering,
+interaction, labels, serialization, viewports, snapping, and spatial behavior.
+The advanced self-test verifies adaptive indexing, incremental connectivity,
+render diffs, task coalescing, worker routing, bundles, connector paths, and
+retained Pixi object reuse.
 
-## Python
+## Entry point
 
-See `python/README.md`.
+```js
+import {
+  HarnessEditorEngine,
+  LegacyHarnessEditorEngine,
+  HighPerformanceVisualRuntime,
+  AdaptiveSpatialIndex,
+  createEmptyDocument,
+  renderEditorSvg,
+} from '@xsession/editor-core';
+```
 
-## Validation
+`HarnessEditorEngine` is the incremental production engine.
+`LegacyHarnessEditorEngine` remains available for comparison and compatibility.
 
-See `VALIDATION_V3.md`.
+Optional ELK/libavoid integrations require their corresponding external
+packages. The default SVG and Canvas2D paths remain dependency-free.
+
+See [API.md](docs/API.md), [HOST_INTEGRATION.md](docs/HOST_INTEGRATION.md), and
+[ROUTECORE_CAPABILITY_REVIEW.md](docs/ROUTECORE_CAPABILITY_REVIEW.md).

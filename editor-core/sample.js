@@ -63,7 +63,7 @@ export function createSampleDocument() {
         .build();
     const ecu = new ComponentBuilder('A1', 'A1', 'device')
         .at(390, 80)
-        .withLabels({ title: 'A1', subtitle: 'OFFLINE CONTROL UNIT', manufacturer: 'OH-CAD' })
+        .withLabels({ title: 'A1', subtitle: 'CONTROL UNIT', manufacturer: 'Editor Core' })
         .addBank({ id: 'A1:west', side: 'west', flow: 'forward', rowGap: 2, edgePadding: 12, collapseEmpty: false })
         .addBank({ id: 'A1:east', side: 'east', flow: 'forward', rowGap: 2, edgePadding: 12, collapseEmpty: false })
         .addPort({ id: 'A1:1', label: 'P1', function: 'VBAT_IN', side: 'west', bankId: 'A1:west', electricalClass: 'power-input' })

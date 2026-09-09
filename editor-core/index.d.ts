@@ -37,6 +37,5 @@ export { deepClone, CommandHistory as SnapshotHistory, type HistoryEntry as Snap
 export { FunctionalCommand, CommandHistory as TransactionalCommandHistory, type CommandResult, type DocumentCommand, } from './history.js';
 export { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, normalizeWirePattern, wirePaintLayers, colorPatternDescription, contrastingText, relativeLuminance as optionalRelativeLuminance, contrastRatio as optionalContrastRatio, } from './paint.js';
 export { createDocument as createEditorDocument, cloneDocument as cloneEditorDocument, connectedPortIds as connectedPortIdsInDocument, wiresConnectedToPort, wiresConnectedToComponent, canConnectPorts, ComponentMutationError, mutateComponent, addComponent as addComponentToDocument, addWire as addWireToDocument, removeWire as removeWireFromDocument, type ConnectionCheck, } from './document.js';
+export { HarnessEditorEngine, type PerformanceEngineOptions, type PerformanceMutationImpact, } from './performance-engine.js';
 //# sourceMappingURL=index.d.ts.map
-
-export { HarnessEditorEngine, type PerformanceEngineOptions, type PerformanceMutationImpact } from './performance-engine.js';

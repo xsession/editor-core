@@ -3,7 +3,7 @@ import { DEFAULT_COMPONENT_STYLE, DEFAULT_TEXT_STYLE } from './component.js';
 import { boundsFromPoints, formatNumber, inflateRect, rectBottom, rectRight, roundedOrthogonalPath, routeBounds, unionRects, } from './geometry.js';
 import { findWireCrossings, resolveEndpoint } from './routing.js';
 export const DEFAULT_EDITOR_THEME = {
-    id: 'ohcad-light',
+    id: 'editor-core-light',
     background: '#f7f8fa',
     gridMinor: '#dfe3e8',
     gridMajor: '#c6ccd4',
@@ -128,7 +128,7 @@ function renderComponent(document, geometry, theme, selection, showPorts = true)
     const subtitle = component.labels.subtitle
         ? `<text x="${formatNumber(geometry.subtitlePoint.x)}" y="${formatNumber(subtitleY)}"${subtitleTransform} text-anchor="middle" font-family="${escapeXml(DEFAULT_TEXT_STYLE.fontFamily)}" font-size="9.8" fill="${escapeXml(subtitleColor)}">${escapeXml(component.labels.subtitle)}</text>`
         : '';
-    return `<g class="ohcad-component" data-component-id="${escapeXml(component.id)}" role="graphics-symbol" aria-label="${escapeXml(aria)}">
+    return `<g class="editor-core-component" data-component-id="${escapeXml(component.id)}" role="graphics-symbol" aria-label="${escapeXml(aria)}">
 <title>${escapeXml(aria)}</title>
 ${selectionOutline}
 <rect x="${formatNumber(body.x)}" y="${formatNumber(body.y)}" width="${formatNumber(body.width)}" height="${formatNumber(body.height)}" rx="${formatNumber(style.bodyRadius)}" fill="${escapeXml(style.bodyFill)}" stroke="${escapeXml(style.bodyStroke)}" stroke-width="${formatNumber(style.bodyStrokeWidth)}" vector-effect="non-scaling-stroke"/>
@@ -149,15 +149,15 @@ function renderWire(wire, theme, selection) {
     });
     const strokes = [];
     if (paint.selection)
-        strokes.push(renderStroke(routePath, paint.selection, 'ohcad-wire-selection'));
+        strokes.push(renderStroke(routePath, paint.selection, 'editor-core-wire-selection'));
     if (paint.warning)
-        strokes.push(renderStroke(routePath, paint.warning, 'ohcad-wire-warning'));
+        strokes.push(renderStroke(routePath, paint.warning, 'editor-core-wire-warning'));
     if (paint.outline)
-        strokes.push(renderStroke(routePath, paint.outline, 'ohcad-wire-outline'));
+        strokes.push(renderStroke(routePath, paint.outline, 'editor-core-wire-outline'));
     for (const layer of paint.engineeringLayers)
-        strokes.push(renderStroke(routePath, layer, 'ohcad-wire-stroke'));
+        strokes.push(renderStroke(routePath, layer, 'editor-core-wire-stroke'));
     const label = wire.label ?? wire.signal ?? wire.id;
-    return `<g class="ohcad-wire" data-wire-id="${escapeXml(wire.id)}" role="graphics-symbol" aria-label="${escapeXml(label)}"><title>${escapeXml(label)}</title>${strokes.join('')}</g>`;
+    return `<g class="editor-core-wire" data-wire-id="${escapeXml(wire.id)}" role="graphics-symbol" aria-label="${escapeXml(label)}"><title>${escapeXml(label)}</title>${strokes.join('')}</g>`;
 }
 function renderCrossingBridges(document, theme, background) {
     const wires = document.wireOrder.map((id) => document.wires[id]).filter((wire) => Boolean(wire));
@@ -213,7 +213,7 @@ function renderLabel(label, placement, theme, selection) {
     const secondary = label.secondaryText
         ? `<text x="${formatNumber(placement.position.x)}" y="${formatNumber(textY + style.lineHeight)}" text-anchor="middle" font-family="${escapeXml(style.fontFamily)}" font-size="${formatNumber(style.fontSize * 0.88)}" fill="${escapeXml(secondaryFill)}">${escapeXml(label.secondaryText)}</text>`
         : '';
-    return `<g class="ohcad-label" data-label-id="${escapeXml(label.id)}" role="graphics-symbol" aria-label="${escapeXml(label.text)}">
+    return `<g class="editor-core-label" data-label-id="${escapeXml(label.id)}" role="graphics-symbol" aria-label="${escapeXml(label.text)}">
 ${leader}
 <rect x="${formatNumber(placement.bounds.x)}" y="${formatNumber(placement.bounds.y)}" width="${formatNumber(placement.bounds.width)}" height="${formatNumber(placement.bounds.height)}" rx="${formatNumber(style.borderRadius)}" fill="${escapeXml(style.background ?? theme.labelBackground)}" stroke="${escapeXml(border)}" stroke-width="${formatNumber(isSelected ? 2 : style.borderWidth)}" vector-effect="non-scaling-stroke"/>
 <text x="${formatNumber(placement.position.x)}" y="${formatNumber(textY)}" text-anchor="middle" font-family="${escapeXml(style.fontFamily)}" font-size="${formatNumber(style.fontSize)}" font-weight="${escapeXml(String(style.fontWeight))}" fill="${escapeXml(style.fill)}">${escapeXml(label.text)}</text>
@@ -258,7 +258,7 @@ function renderSnapGuides(guides, theme) {
         const label = guide.label
             ? `<text x="${formatNumber(labelX)}" y="${formatNumber(labelY)}" font-family="${escapeXml(DEFAULT_TEXT_STYLE.fontFamily)}" font-size="9" fill="${escapeXml(theme.guide)}">${escapeXml(guide.label)}</text>`
             : '';
-        return `<g class="ohcad-snap-guide ohcad-snap-${guide.kind}" fill="none" stroke="${escapeXml(theme.guide)}" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke">${line}${label}</g>`;
+        return `<g class="editor-core-snap-guide editor-core-snap-${guide.kind}" fill="none" stroke="${escapeXml(theme.guide)}" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke">${line}${label}</g>`;
     }).join('\n');
 }
 function previewRoutePoints(start, end) {
@@ -275,7 +275,7 @@ function renderInteractionOverlay(document, geometries, overlay, theme) {
         result.push(renderSnapGuides(overlay.snapGuides, theme));
     if (overlay.marquee) {
         const bounds = overlay.marquee.bounds;
-        result.push(`<rect class="ohcad-marquee" x="${formatNumber(bounds.x)}" y="${formatNumber(bounds.y)}" width="${formatNumber(bounds.width)}" height="${formatNumber(bounds.height)}" fill="${escapeXml(theme.selectionHalo)}" fill-opacity="0.16" stroke="${escapeXml(theme.selection)}" stroke-width="1.2" stroke-dasharray="${overlay.marquee.mode === 'window' ? '6 3' : '2 3'}" vector-effect="non-scaling-stroke"/>`);
+        result.push(`<rect class="editor-core-marquee" x="${formatNumber(bounds.x)}" y="${formatNumber(bounds.y)}" width="${formatNumber(bounds.width)}" height="${formatNumber(bounds.height)}" fill="${escapeXml(theme.selectionHalo)}" fill-opacity="0.16" stroke="${escapeXml(theme.selection)}" stroke-width="1.2" stroke-dasharray="${overlay.marquee.mode === 'window' ? '6 3' : '2 3'}" vector-effect="non-scaling-stroke"/>`);
     }
     if (overlay.connection) {
         const source = resolveEndpoint(overlay.connection.source, geometries);
@@ -284,7 +284,7 @@ function renderInteractionOverlay(document, geometries, overlay, theme) {
             const end = target?.point ?? overlay.connection.point;
             const path = roundedOrthogonalPath(previewRoutePoints(source.point, end), 6).path;
             const color = overlay.connection.valid ? theme.validTarget : theme.invalidTarget;
-            result.push(`<path class="ohcad-connection-preview" d="${path}" fill="none" stroke="${escapeXml(color)}" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`);
+            result.push(`<path class="editor-core-connection-preview" d="${path}" fill="none" stroke="${escapeXml(color)}" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`);
             result.push(`<circle cx="${formatNumber(end.x)}" cy="${formatNumber(end.y)}" r="8" fill="${escapeXml(color)}" fill-opacity="0.18" stroke="${escapeXml(color)}" stroke-width="2" vector-effect="non-scaling-stroke"/>`);
             if (overlay.connection.reason) {
                 result.push(`<text x="${formatNumber(end.x + 12)}" y="${formatNumber(end.y - 10)}" font-family="${escapeXml(DEFAULT_TEXT_STYLE.fontFamily)}" font-size="10" fill="${escapeXml(color)}">${escapeXml(overlay.connection.reason)}</text>`);
@@ -303,7 +303,7 @@ export function renderEditorSvg(document, context) {
     const gridMinor = Math.max(1, document.settings.grid.spacing);
     const gridMajor = gridMinor * Math.max(1, document.settings.grid.majorEvery);
     const grid = options.showGrid && document.settings.grid.visible
-        ? `<rect x="${formatNumber(viewBox.x)}" y="${formatNumber(viewBox.y)}" width="${formatNumber(viewBox.width)}" height="${formatNumber(viewBox.height)}" fill="url(#ohcad-grid-major)"/>`
+        ? `<rect x="${formatNumber(viewBox.x)}" y="${formatNumber(viewBox.y)}" width="${formatNumber(viewBox.width)}" height="${formatNumber(viewBox.height)}" fill="url(#editor-core-grid-major)"/>`
         : '';
     const wires = document.wireOrder
         .map((id) => document.wires[id])
@@ -331,21 +331,21 @@ export function renderEditorSvg(document, context) {
     const overlay = renderInteractionOverlay(document, context.geometries, context.overlay, theme);
     const background = options.background ?? theme.background;
     const accessibility = options.includeAccessibility ? ' role="graphics-document" aria-label="Harness visual editor canvas"' : '';
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${formatNumber(viewBox.x)} ${formatNumber(viewBox.y)} ${formatNumber(viewBox.width)} ${formatNumber(viewBox.height)}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"${accessibility} data-ohcad-schema="1">
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${formatNumber(viewBox.x)} ${formatNumber(viewBox.y)} ${formatNumber(viewBox.width)} ${formatNumber(viewBox.height)}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"${accessibility} data-editor-core-schema="1">
 <title>Harness visual editor</title>
 <desc>Offline cable and wiring-harness editor scene with components, ports, wires, labels, and routing handles.</desc>
 <defs>
-<pattern id="ohcad-grid-minor" width="${formatNumber(gridMinor)}" height="${formatNumber(gridMinor)}" patternUnits="userSpaceOnUse"><path d="M ${formatNumber(gridMinor)} 0 L 0 0 0 ${formatNumber(gridMinor)}" fill="none" stroke="${escapeXml(theme.gridMinor)}" stroke-width="0.6" opacity="${formatNumber(document.settings.grid.opacity)}" vector-effect="non-scaling-stroke"/></pattern>
-<pattern id="ohcad-grid-major" width="${formatNumber(gridMajor)}" height="${formatNumber(gridMajor)}" patternUnits="userSpaceOnUse"><rect width="${formatNumber(gridMajor)}" height="${formatNumber(gridMajor)}" fill="url(#ohcad-grid-minor)"/><path d="M ${formatNumber(gridMajor)} 0 L 0 0 0 ${formatNumber(gridMajor)}" fill="none" stroke="${escapeXml(theme.gridMajor)}" stroke-width="1" opacity="${formatNumber(document.settings.grid.opacity)}" vector-effect="non-scaling-stroke"/></pattern>
+<pattern id="editor-core-grid-minor" width="${formatNumber(gridMinor)}" height="${formatNumber(gridMinor)}" patternUnits="userSpaceOnUse"><path d="M ${formatNumber(gridMinor)} 0 L 0 0 0 ${formatNumber(gridMinor)}" fill="none" stroke="${escapeXml(theme.gridMinor)}" stroke-width="0.6" opacity="${formatNumber(document.settings.grid.opacity)}" vector-effect="non-scaling-stroke"/></pattern>
+<pattern id="editor-core-grid-major" width="${formatNumber(gridMajor)}" height="${formatNumber(gridMajor)}" patternUnits="userSpaceOnUse"><rect width="${formatNumber(gridMajor)}" height="${formatNumber(gridMajor)}" fill="url(#editor-core-grid-minor)"/><path d="M ${formatNumber(gridMajor)} 0 L 0 0 0 ${formatNumber(gridMajor)}" fill="none" stroke="${escapeXml(theme.gridMajor)}" stroke-width="1" opacity="${formatNumber(document.settings.grid.opacity)}" vector-effect="non-scaling-stroke"/></pattern>
 </defs>
 <rect x="${formatNumber(viewBox.x)}" y="${formatNumber(viewBox.y)}" width="${formatNumber(viewBox.width)}" height="${formatNumber(viewBox.height)}" fill="${escapeXml(background)}"/>
-<g id="ohcad-grid-layer" pointer-events="none">${grid}</g>
-<g id="ohcad-wire-layer">${wires}</g>
-<g id="ohcad-crossing-layer" pointer-events="none">${renderCrossingBridges(document, theme, background)}</g>
-<g id="ohcad-component-layer">${components}</g>
-<g id="ohcad-label-layer">${labels}</g>
-<g id="ohcad-interaction-layer" pointer-events="none">${overlay}</g>
-<g id="ohcad-handle-layer">${handles}</g>
+<g id="editor-core-grid-layer" pointer-events="none">${grid}</g>
+<g id="editor-core-wire-layer">${wires}</g>
+<g id="editor-core-crossing-layer" pointer-events="none">${renderCrossingBridges(document, theme, background)}</g>
+<g id="editor-core-component-layer">${components}</g>
+<g id="editor-core-label-layer">${labels}</g>
+<g id="editor-core-interaction-layer" pointer-events="none">${overlay}</g>
+<g id="editor-core-handle-layer">${handles}</g>
 </svg>`;
 }
 export function renderSvgFragment(document, context) {

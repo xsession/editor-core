@@ -1,0 +1,26 @@
+{
+  "name": "@xsession/editor-core",
+  "version": "0.4.0",
+  "description": "Framework-neutral engineering diagram engine with deterministic harness routing, interaction, rendering, and scalable visual runtimes.",
+  "type": "module",
+  "main": "./editor-core/index.js",
+  "types": "./editor-core/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./editor-core/index.d.ts",
+      "import": "./editor-core/index.js"
+    }
+  },
+  "files": ["editor-core", "src", "docs", "python", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/sync-advanced-declarations.mjs",
+    "test:base": "node --test test/*.test.mjs",
+    "test:advanced": "node tests/advanced-performance-selftest.mjs",
+    "test": "npm run build && npm run test:base && npm run test:advanced",
+    "check": "npm test"
+  },
+  "keywords": ["visual-editor", "diagram", "cad", "wiring-harness", "routing", "svg", "canvas2d"],
+  "license": "GPL-2.0-only",
+  "engines": { "node": ">=20" },
+  "sideEffects": false
+}
