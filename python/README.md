@@ -31,6 +31,21 @@ cd python
 PYTHONPATH=. python benchmarks/large_scene.py
 ```
 
+## GUI test harness (tkinter)
+
+A dependency-free tkinter example that exercises the package interactively:
+live drag with dependency-driven wire rerouting, port-to-port connection with
+policy validation, undo/redo (Ctrl+Z / Ctrl+Y), layered auto-layout, the
+optional ELK + libavoid Node backends, spatial-index viewport culling with LOD,
+a live status panel (revisions, metrics, spatial item count), and a 100-node
+stress scene.
+
+```bash
+cd python
+python examples/gui_demo.py            # interactive
+python examples/gui_demo.py --smoke    # headless self-test, exits 0
+```
+
 ## Optional ELK / libavoid backends
 
 The Python core itself has no required third-party dependencies. To call the same JavaScript production backends from Python:

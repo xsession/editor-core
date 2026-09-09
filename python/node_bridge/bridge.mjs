@@ -14,7 +14,7 @@ async function elkLayout() {
 
 async function libavoidRoute() {
   const mod = await import('@mr_mint/elkjs-libavoid');
-  await mod.init?.(request.wasmPath);
+  await mod.init?.(request.wasmPath ?? undefined);
   const routes = await mod.routeEdges(request.graph, request.options ?? {});
   return Object.fromEntries([...routes.entries()]);
 }
