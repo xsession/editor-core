@@ -1,3 +1,4 @@
+import { type DrawingElement } from './drawing.js';
 import type { SnapGuide } from './snapping.js';
 import type { ComponentGeometry, EditorDocument, EditorTheme, LabelPlacement, Point, Rect, RenderOptions, SelectionState, WireEndpoint } from './types.js';
 export declare const DEFAULT_EDITOR_THEME: EditorTheme;
@@ -24,6 +25,7 @@ export interface SvgRenderContext {
     theme?: EditorTheme;
     options?: Partial<RenderOptions>;
     overlay?: SvgInteractionOverlay;
+    drawingElements?: readonly DrawingElement[];
 }
 export declare function renderEditorSvg(document: EditorDocument, context: SvgRenderContext): string;
 export declare function renderSvgFragment(document: EditorDocument, context: SvgRenderContext): string;

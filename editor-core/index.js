@@ -30,6 +30,8 @@ export * from './visual-runtime.js';
 export * from './performance.js';
 export * from './pixi8.js';
 export * from './bundle-routing.js';
+export * from './drawing.js';
+export * from './spatial-harness.js';
 export * from './connector-paths.js';
 export * from './elk-layout.js';
 export * from './libavoid-backend.js';

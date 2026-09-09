@@ -11,6 +11,7 @@ import {
   unionRects,
 } from './geometry.js';
 import { findWireCrossings, resolveEndpoint } from './routing.js';
+import { renderDrawingElements, type DrawingElement } from './drawing.js';
 import type { SnapGuide } from './snapping.js';
 import type {
   ComponentGeometry,
@@ -361,6 +362,7 @@ export interface SvgRenderContext {
   theme?: EditorTheme;
   options?: Partial<RenderOptions>;
   overlay?: SvgInteractionOverlay;
+  drawingElements?: readonly DrawingElement[];
 }
 
 export function renderEditorSvg(document: EditorDocument, context: SvgRenderContext): string {
@@ -396,6 +398,7 @@ export function renderEditorSvg(document: EditorDocument, context: SvgRenderCont
     : '';
   const handles = options.showRouteHandles ? renderRouteHandles(document, context.selection, theme) : '';
   const overlay = renderInteractionOverlay(document, context.geometries, context.overlay, theme);
+  const drawing = renderDrawingElements(context.drawingElements, theme);
   const background = options.background ?? theme.background;
   const accessibility = options.includeAccessibility ? ' role="graphics-document" aria-label="Harness visual editor canvas"' : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${formatNumber(viewBox.x)} ${formatNumber(viewBox.y)} ${formatNumber(viewBox.width)} ${formatNumber(viewBox.height)}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"${accessibility} data-editor-core-schema="1">
@@ -411,6 +414,7 @@ export function renderEditorSvg(document: EditorDocument, context: SvgRenderCont
 <g id="editor-core-crossing-layer" pointer-events="none">${renderCrossingBridges(document, theme, background)}</g>
 <g id="editor-core-component-layer">${components}</g>
 <g id="editor-core-label-layer">${labels}</g>
+<g id="editor-core-drawing-layer"><defs><marker id="editor-core-drawing-arrow" markerWidth="8" markerHeight="8" refX="3" refY="3" orient="auto"><path d="M6 0L0 3L6 6z" fill="context-stroke"/></marker></defs>${drawing}</g>
 <g id="editor-core-interaction-layer" pointer-events="none">${overlay}</g>
 <g id="editor-core-handle-layer">${handles}</g>
 </svg>`;
