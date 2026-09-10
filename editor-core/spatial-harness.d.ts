@@ -23,9 +23,15 @@ export interface SpatialViewpoint {
     createdAt: string;
 }
 export interface SpatialProductModel {
+    assetId: string;
+    contentHash: string;
+    byteLength: number;
     name: string;
     mediaType: 'model/gltf-binary';
-    dataUrl: string;
+    /** Multiplier converting the GLB's native units into millimetres. */
+    sourceUnitScaleMm: number;
+    /** Column-major 4x4 matrix placing product-local coordinates into harness space. */
+    modelToHarnessTransform: number[];
     opacity: number;
 }
 export interface SpatialHarnessDocument {
