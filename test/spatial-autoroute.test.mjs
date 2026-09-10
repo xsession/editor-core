@@ -95,12 +95,11 @@ test('bend-aware A* routes around the keep-out box and never enters it', () => {
 });
 
 test('A* fails cleanly when the goal is fully enclosed', () => {
-  const shell = [
-    ...boxTriangles(),
-  ];
-  // Enclose the goal by adding a box around it: second box centered at the goal.
-  const x0 = 200, x1 = 260, y0 = 30, y1 = 70, z0 = -10, z1 = 30;
   const p = (x, y, z) => ({ x, y, z });
+  // A large solid centered on the goal: the goal is at its center, far
+  // enough from every face that the endpoint free-voxel snap (25 mm) cannot
+  // reach free space, so no free goal voxel exists.
+  const x0 = 140, x1 = 320, y0 = -30, y1 = 130, z0 = -40, z1 = 60;
   const faces = [
     [[p(x0, y0, z0), p(x1, y0, z0), p(x1, y0, z1)], [p(x0, y0, z0), p(x1, y0, z1), p(x0, y0, z1)]],
     [[p(x0, y1, z1), p(x1, y1, z1), p(x1, y1, z0)], [p(x0, y1, z1), p(x1, y1, z0), p(x0, y1, z0)]],
@@ -109,11 +108,12 @@ test('A* fails cleanly when the goal is fully enclosed', () => {
     [[p(x0, y0, z1), p(x1, y0, z1), p(x1, y1, z1)], [p(x0, y0, z1), p(x1, y1, z1), p(x0, y1, z1)]],
     [[p(x0, y1, z0), p(x1, y1, z0), p(x1, y0, z0)], [p(x0, y1, z0), p(x1, y0, z0), p(x0, y0, z0)]],
   ];
-  const volume = buildSpatialKeepOutVolume([...shell, ...faces.flat().map(([a, b, c]) => ({ a, b, c }))], { clearanceMm: 0, cellSizeMm: 5 });
+  const volume = buildSpatialKeepOutVolume(boxTriangles().concat(faces.flat().map(([a, b, c]) => ({ a, b, c }))), { clearanceMm: 0, cellSizeMm: 5 });
   assert.ok(volume);
   const path = cable({ controlPoints: [{ x: 20, y: 50, z: 10 }, { x: 230, y: 50, z: 10 }] });
   const route = routeSpatialCable(path, volume, { maxExpansions: 100000 });
   assert.equal(route.success, false);
+  assert.equal(route.reason, 'goal-blocked');
 });
 
 test('line-of-sight is rejected through obstacles and accepted around them', () => {

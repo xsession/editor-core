@@ -104,6 +104,17 @@ export declare function volumeLineOfSight(volume: SpatialKeepOutVolume | null, f
  */
 export declare function routeSpatialCable(cable: SpatialCablePath, volume: SpatialKeepOutVolume | null, options?: SpatialRoutingOptions): SpatialRouteResult;
 /**
+ * Replaces every corner whose three-point circumradius is below the minimum
+ * bend radius with a tangent-arc fillet (tangent points + arc midpoint).
+ * This is the standard two-tangent fillet: for a turn of angle θ the tangent
+ * distance is t = R * tan(θ/2); the fillet circle of radius R has its center
+ * on the turn bisector at B + w * R / sin(θ/2), and the arc midpoint is the
+ * point of the circle nearest to B. When the available leg length is too
+ * short for the full radius, the fillet radius is scaled down (the corner
+ * then remains reported as a violation by the analysis).
+ */
+export declare function filletSpatialCorners(points: SpatialPoint[], minimumBendRadiusMm: number): SpatialPoint[];
+/**
  * Catmull-Rom evaluation for an open point list. Each segment between the
  * interior control points is the uniform Catmull-Rom cubic
  *

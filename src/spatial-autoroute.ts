@@ -232,10 +232,19 @@ export function buildSpatialKeepOutVolume(triangles: SpatialTriangle[], options:
   }
   const nx = perAxis(spanX), ny = perAxis(spanY), nz = perAxis(spanZ);
   const origin = { x: minX, y: minY, z: minZ };
-  const blocked = new Uint8Array(nx * ny * nz);
   const idOf = (ix: number, iy: number, iz: number) => ix + nx * (iy + ny * iz);
-  // Pass 1: surface clearance shell (distance-to-triangle for nearby voxels).
+  // Pass 1a: thin clearance shell (the user-requested clearance, quantized to
+  // the voxel grid) — the final keep-out boundary.
+  // Pass 1b: a thick shell (clearance + ~0.9 * cell) used only as the sealed
+  // boundary for the interior flood below; a 0.25 * cell shell would not seal
+  // the 8-neighbor flood and interior voxels would be misread as exterior.
+  // The final blocked set is (interior) OR (thin shell), so routing clearance
+  // is not inflated beyond the requested value by the sealing margin.
+  const shell = new Uint8Array(nx * ny * nz);
+  const thick = new Uint8Array(nx * ny * nz);
   const inflate = Math.max(clearanceMm, cell * 0.9);
+  const thinRadius = clearanceMm + cell * 0.25;
+  const thickRadius = clearanceMm + cell * 0.9;
   for (const triangle of triangles) {
     const { lo, hi } = triangleBounds(triangle);
     const ix0 = Math.max(0, Math.floor((lo.x - inflate - origin.x) / cell));
@@ -248,19 +257,21 @@ export function buildSpatialKeepOutVolume(triangles: SpatialTriangle[], options:
       for (let iy = iy0; iy <= iy1; iy += 1) {
         for (let ix = ix0; ix <= ix1; ix += 1) {
           const center = { x: origin.x + (ix + 0.5) * cell, y: origin.y + (iy + 0.5) * cell, z: origin.z + (iz + 0.5) * cell };
-          if (distancePointToTriangle(center, triangle) < clearanceMm + cell * 0.25) blocked[idOf(ix, iy, iz)] = 1;
+          const dist = distancePointToTriangle(center, triangle);
+          if (dist < thickRadius) thick[idOf(ix, iy, iz)] = 1;
+          if (dist < thinRadius) shell[idOf(ix, iy, iz)] = 1;
         }
       }
     }
   }
-  // Pass 2: interior fill. Flood from the grid border through free voxels;
-  // free voxels the exterior flood never reaches are enclosed by the solid
-  // and are blocked as well.
+  // Pass 2: interior fill. Flood from the grid border through thick-free
+  // voxels; free voxels the exterior flood never reaches are enclosed by the
+  // solid and are blocked as well.
   const exterior = new Uint8Array(nx * ny * nz);
   const stack: number[] = [];
   const pushFree = (ix: number, iy: number, iz: number) => {
     const id = idOf(ix, iy, iz);
-    if (blocked[id] || exterior[id]) return;
+    if (thick[id] || exterior[id]) return;
     exterior[id] = 1;
     stack.push(id);
   };
@@ -294,8 +305,9 @@ export function buildSpatialKeepOutVolume(triangles: SpatialTriangle[], options:
     if (iz > 0) pushFree(ix, iy, iz - 1);
     if (iz < nz - 1) pushFree(ix, iy, iz + 1);
   }
+  const blocked = new Uint8Array(nx * ny * nz);
   for (let id = 0; id < blocked.length; id += 1) {
-    if (!blocked[id] && !exterior[id]) blocked[id] = 1;
+    if (shell[id] || (!thick[id] && !exterior[id])) blocked[id] = 1;
   }
   return { origin, cellSizeMm: cell, nx, ny, nz, blocked };
 }
@@ -596,7 +608,12 @@ export function routeSpatialCable(cable: SpatialCablePath, volume: SpatialKeepOu
   }
   let controlPoints = jumpChain.map((id) => worldPoint(id));
   controlPoints = removeCollinear(controlPoints);
-  const bendValid = controlPoints.length < 3 || circumradiusMinimum(controlPoints) >= minBend - 1e-6;
+  // Fillet tight corners to satisfy the minimum bend radius; if a fillet arc
+  // would leave the keep-out volume, keep the raw polyline instead.
+  const filleted = filletSpatialCorners(controlPoints, minBend);
+  const filletClear = filleted.every((sample) => volumeIsFree(activeVolume, sample));
+  if (filletClear && filleted.length >= 2) controlPoints = filleted;
+  const bendValid = circumradiusMinimum(controlPoints) >= minBend - 1e-6;
   return { success: true, controlPoints, expansions, pathVoxels, bendValid };
 }
 
@@ -606,6 +623,63 @@ function circumradiusMinimum(points: SpatialPoint[]): number {
     minimum = Math.min(minimum, circumradius(points[index - 1]!, points[index]!, points[index + 1]!));
   }
   return minimum;
+}
+
+/**
+ * Replaces every corner whose three-point circumradius is below the minimum
+ * bend radius with a tangent-arc fillet (tangent points + arc midpoint).
+ * This is the standard two-tangent fillet: for a turn of angle θ the tangent
+ * distance is t = R * tan(θ/2); the fillet circle of radius R has its center
+ * on the turn bisector at B + w * R / sin(θ/2), and the arc midpoint is the
+ * point of the circle nearest to B. When the available leg length is too
+ * short for the full radius, the fillet radius is scaled down (the corner
+ * then remains reported as a violation by the analysis).
+ */
+export function filletSpatialCorners(points: SpatialPoint[], minimumBendRadiusMm: number): SpatialPoint[] {
+  if (points.length < 3 || minimumBendRadiusMm <= 0) return points.map((p) => ({ ...p }));
+  const sub = (a: SpatialPoint, b: SpatialPoint): SpatialPoint => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
+  const out: SpatialPoint[] = [{ ...points[0]! }];
+  for (let index = 1; index < points.length - 1; index += 1) {
+    const A = points[index - 1]!;
+    const B = points[index]!;
+    const C = points[index + 1]!;
+    const u = sub(B, A);
+    const v = sub(C, B);
+    const lenU = Math.hypot(u.x, u.y, u.z);
+    const lenV = Math.hypot(v.x, v.y, v.z);
+    if (lenU <= 1e-9 || lenV <= 1e-9) { out.push({ ...B }); continue; }
+    const cos = Math.min(1, Math.max(-1, (u.x * v.x + u.y * v.y + u.z * v.z) / (lenU * lenV)));
+    const angle = Math.PI - Math.acos(cos); // 0 = straight on
+    if (angle < 1e-3) { out.push({ ...B }); continue; }
+    const radius = circumradius(A, B, C);
+    if (radius + 1e-6 >= minimumBendRadiusMm) { out.push({ ...B }); continue; }
+    const tangent = Math.min(minimumBendRadiusMm * Math.tan(angle / 2), Math.min(lenU, lenV) * 0.5);
+    if (tangent < 1e-6) { out.push({ ...B }); continue; }
+    const filletRadius = tangent / Math.tan(angle / 2);
+    const uUnit = { x: u.x / lenU, y: u.y / lenU, z: u.z / lenU };
+    const vUnit = { x: v.x / lenV, y: v.y / lenV, z: v.z / lenV };
+    const t1 = { x: B.x - uUnit.x * tangent, y: B.y - uUnit.y * tangent, z: B.z - uUnit.z * tangent };
+    const t2 = { x: B.x + vUnit.x * tangent, y: B.y + vUnit.y * tangent, z: B.z + vUnit.z * tangent };
+    // Turn-bisector direction from B into the turn (between B→A and B→C).
+    let wx = -uUnit.x + vUnit.x;
+    let wy = -uUnit.y + vUnit.y;
+    let wz = -uUnit.z + vUnit.z;
+    const wLen = Math.hypot(wx, wy, wz);
+    if (wLen <= 1e-9) { out.push({ ...B }); continue; }
+    wx /= wLen; wy /= wLen; wz /= wLen;
+    const centerDist = filletRadius / Math.sin(angle / 2);
+    const center = { x: B.x + wx * centerDist, y: B.y + wy * centerDist, z: B.z + wz * centerDist };
+    const bx = B.x - center.x, by = B.y - center.y, bz = B.z - center.z;
+    const bDist = Math.hypot(bx, by, bz);
+    const mid = {
+      x: center.x + (bx / bDist) * filletRadius,
+      y: center.y + (by / bDist) * filletRadius,
+      z: center.z + (bz / bDist) * filletRadius,
+    };
+    out.push(t1, mid, t2);
+  }
+  out.push({ ...points[points.length - 1]! });
+  return out;
 }
 
 function removeCollinear(points: SpatialPoint[]): SpatialPoint[] {
