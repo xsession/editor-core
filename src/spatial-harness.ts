@@ -2,6 +2,16 @@ import type { EditorDocument, EntityId, Point, WireEndpoint } from './types.js';
 
 export interface SpatialPoint { x: number; y: number; z: number }
 
+export interface SpatialDatumAttachment {
+  pointIndex: number;
+  /** glTF node (mesh) name the point is attached to. */
+  nodeId: string;
+  /** Triangle (face) index within the node's position buffer. */
+  faceIndex: number;
+  /** (u, v) in edge space: point = a + u * (b - a) + v * (c - a). */
+  barycentric: [number, number];
+}
+
 export interface SpatialCablePath {
   id: EntityId;
   wireId: EntityId;
@@ -12,6 +22,7 @@ export interface SpatialCablePath {
   controlPoints: SpatialPoint[];
   lockedPointIndices: number[];
   surfaceMode: 'free' | 'on-surface' | 'inside-product';
+  datumAttachments?: SpatialDatumAttachment[];
 }
 
 export interface SpatialViewpoint {
